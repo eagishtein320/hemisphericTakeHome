@@ -6,7 +6,7 @@ services:
       - "3001:3001"
 
   frontend:
-    build: ./frontend/client
+    build: ./frontend
     ports:
       - "3000:80"
     environment:

@@ -21,8 +21,6 @@ async function getPeople(req, res) {
         query += " WHERE id = ?"
     }
     try {
-
-
         const data = await db.getAll(query, params);
         return res.status(200).json(data)
     } catch (e) {
@@ -75,7 +73,7 @@ async function streamDataForPerson(personId, ws) {
         } else {
             clearInterval(interval); 
         }
-    }, 1000 / 120); // Send at 120Hz
+    }, 100); // Send at 10Hz
 
     ws.on("close", () => clearInterval(interval));
 }

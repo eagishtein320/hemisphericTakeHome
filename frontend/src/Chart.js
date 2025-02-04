@@ -3,11 +3,11 @@ import { Container, Typography, Card, CardContent, Button } from "@mui/material"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
 export default function Chart({ person }) {
-    const MAX_MESSAGES = 500; // Limit stored messages
+    const MAX_MESSAGES = 500; 
     const [messages, setMessages] = useState([]);
     const [selectedSensors, setSelectedSensors] = useState(new Set());
     const socketRef = useRef(null);
-    const emaRef = useRef({}); // Store EMA values separately
+    const emaRef = useRef({});
 
     const sensorColors = [
         '#8884d8', '#82ca9d', '#FF8042', '#FFBB28', '#8A2BE2',
@@ -38,19 +38,20 @@ export default function Chart({ person }) {
                 }, {}),
             };
 
-            // Compute EMA inline
+            // Compute EMA
             for (let i = 1; i <= 19; i++) {
                 const key = `sensor_${i}`;
                 emaRef.current[key] = emaRef.current[key]
                     ? (0.1 * formattedData[key]) + (0.9 * emaRef.current[key]) // EMA formula
                     : formattedData[key];
 
-                formattedData[`ema_${key}`] = emaRef.current[key];
+                formattedData[`ema_${key}`] = Math.floor(emaRef.current[key]);
             }
 
+            // dont keep old messages. Too hard on the memory.
             setMessages((prevMessages) => {
                 if (prevMessages.length >= MAX_MESSAGES) {
-                    prevMessages.shift(); // Remove oldest entry
+                    prevMessages.shift();
                 }
                 return [...prevMessages, formattedData];
             });
@@ -85,8 +86,8 @@ export default function Chart({ person }) {
     return (
         <Container className="chart">
             <Card>
-                <Typography variant="h4" gutterBottom>
-                    Real-Time Sensor Data: {person.name}
+                <Typography variant="h4" gutterBottom className="chart-header">
+                    Real-Time Sensor Data: {person.name} with EMA aggregation (dashed line)
                 </Typography>
                 <CardContent>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
