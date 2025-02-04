@@ -1,4 +1,6 @@
-## hemisphericTakeHome## To Run
+## hemisphericTakeHome
+
+## To Run
 docker compose up
 
 ## Sensor Data Visualization
