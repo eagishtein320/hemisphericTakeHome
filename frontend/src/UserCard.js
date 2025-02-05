@@ -20,10 +20,10 @@ export default function RandomUserCard({ handleClick, person }) {
 
 
   return (
-    <Container>
+    <Container 
+    className="user-button-container">
       {person && (
         <Button
-          className="user-button"
           key={person.id}
           variant="contained"
           onClick={() => handleClick(person)}
