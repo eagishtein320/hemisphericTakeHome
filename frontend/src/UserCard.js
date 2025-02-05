@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Button, Container } from "@mui/material";
 
-export default function RandomUserCard({handleClick, person}) {
-    const [profilePhoto, setProfilePhoto] = useState(null)
+export default function RandomUserCard({ handleClick, person }) {
+  const [profilePhoto, setProfilePhoto] = useState(null)
   const fetchRandomUser = async () => {
     try {
       const response = await fetch("https://randomuser.me/api/");
       const data = await response.json();
       const user = data.results[0];
-        setProfilePhoto(user.picture.large)
+      setProfilePhoto(user.picture.large)
     } catch (error) {
       console.error("Error fetching user:", error);
     }

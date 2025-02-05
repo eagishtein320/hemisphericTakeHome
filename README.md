@@ -2,7 +2,7 @@
 
 ## To Run
 docker compose up
-
+go to http://localhost:3000
 ## Sensor Data Visualization
 
 This graph displays data from 19 sensors on a user, sampled at a rate of 120Hz. Each sensor’s data is aggregated using an **Exponential Moving Average (EMA)**. This method was chosen to smooth the readings and highlight long-term trends, as opposed to using a simple average, which might include false positives, sudden movements, meaningless fluctuations, or outliers. EMA reduces noise and provides a clearer picture of the sensor’s behavior over time.

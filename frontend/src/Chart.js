@@ -67,8 +67,13 @@ export default function Chart({ person }) {
             socketRef.current = null;
         };
     }, [person]);
-
-    const formatTimestamp = (timestamp) => new Date(timestamp * 1000).toUTCString().split(" ")[4];
+    const formatTimestamp = (timestamp) => {
+        if (!timestamp) return '';
+        
+        const date = new Date(timestamp * 1000);
+        return date.toISOString().split("T")[1].slice(0, 12);
+    };
+    
 
     const toggleSensor = (sensor) => {
         setSelectedSensors((prev) => {

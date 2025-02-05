@@ -4,7 +4,7 @@ import Chart from "./Chart";
 
 export default function App() {
   const [persons, setPersons] = useState([])
-  const [selected, setSelected] = useState([])
+  const [selected, setSelected] = useState(null)
 
   const fetchPeople = async () => {
 
@@ -22,18 +22,15 @@ export default function App() {
   }, []);
 
   async function handleClick(person) {
-    setSelected((prevSelected) => ([...prevSelected, person]))
-
+    setSelected(person)
   }
 
-
-  const charts = selected.map((person) => <Chart person={person} />)
   return (
     <div className="app-wrapper">
       <ButtonsContainer persons={persons} handleClick={handleClick} />
       <div className="charts-wrapper">
 
-        {charts}
+        {selected && <Chart key={selected.id} person={selected}/>}
       </div>
     </div>
   );
