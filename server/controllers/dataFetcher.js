@@ -57,25 +57,21 @@ async function getSensorDataByPerson(id) {
  * @param {WebSocket} ws - The WebSocket connection.
  */
 async function streamDataForPerson(personId, ws) {
-    const sampleData = await getSensorDataByPerson(personId); 
-    let index = 0; 
+    const sampleData = await getSensorDataByPerson(personId);
+    let index = 0;
 
-    const interval = setInterval(() => {
-        if (ws.readyState !== WebSocket.OPEN) {
-            clearInterval(interval);
-            return;
-        }
+    function sendNext() {
+        if (ws.readyState !== WebSocket.OPEN || index >= sampleData.length) return;
 
-        if (index < sampleData.length) {
-            const row = sampleData[index];
-            ws.send(JSON.stringify(row));
-            index++;
-        } else {
-            clearInterval(interval); 
-        }
-    }, 100); // Send at 10Hz
+        ws.send(JSON.stringify(sampleData[index]));
+        index++;
 
-    ws.on("close", () => clearInterval(interval));
+        setTimeout(sendNext, 8); // Adjusting dynamically instead of fixed `setInterval`
+    }
+
+    sendNext();
+
+    ws.on("close", () => console.log("Client disconnected"));
 }
 
 

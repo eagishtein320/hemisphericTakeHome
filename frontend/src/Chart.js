@@ -8,6 +8,11 @@ export default function Chart({ person }) {
     const [selectedSensors, setSelectedSensors] = useState(new Set());
     const socketRef = useRef(null);
     const emaRef = useRef({});
+    const [actualRate, setActualRate] = useState(0);
+
+    const receivedCountRef = useRef(0);
+    const lastTimestampRef = useRef(performance.now());
+
 
     const sensorColors = [
         '#8884d8', '#82ca9d', '#FF8042', '#FFBB28', '#8A2BE2',
@@ -27,6 +32,19 @@ export default function Chart({ person }) {
         };
 
         socketRef.current.onmessage = (event) => {
+            receivedCountRef.current++;
+
+            const now = performance.now();
+            const elapsedTime = now - lastTimestampRef.current;
+
+            if (elapsedTime >= 1000) { // Every 1 second, update the rate
+                const actualRate = receivedCountRef.current / (elapsedTime / 1000); // Hz calculation
+                setActualRate((prevRate) => (Math.abs(prevRate - actualRate) > 1 ? actualRate.toFixed(2) : prevRate)); // Only update state if there's a noticeable change
+
+                receivedCountRef.current = 0;
+                lastTimestampRef.current = now;
+            }
+
             const receivedData = JSON.parse(event.data);
             const parsedData = JSON.parse(receivedData.data);
 
@@ -48,7 +66,7 @@ export default function Chart({ person }) {
                 formattedData[`ema_${key}`] = Math.floor(emaRef.current[key]);
             }
 
-            // dont keep old messages. Too hard on the memory.
+            // Remove old messages to prevent memory overload
             setMessages((prevMessages) => {
                 if (prevMessages.length >= MAX_MESSAGES) {
                     prevMessages.shift();
@@ -67,6 +85,7 @@ export default function Chart({ person }) {
             socketRef.current = null;
         };
     }, [person]);
+
     const formatTimestamp = (timestamp) => {
         if (!timestamp) return '';
         
@@ -91,9 +110,14 @@ export default function Chart({ person }) {
     return (
         <Container className="chart">
             <Card>
-                <Typography variant="h4" gutterBottom className="chart-header">
+                <Typography variant="h5" gutterBottom className="chart-header">
                     Real-Time Sensor Data: {person.name} with EMA aggregation (dashed line)
+                   
                 </Typography>
+                <Typography variant="h5" gutterBottom className="chart-header">
+                Live Data Rate: {actualRate} Hz
+                </Typography>
+                
                 <CardContent>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
                         <Button variant={isShowingAll ? "contained" : "outlined"} onClick={resetSelection}>
